@@ -1,0 +1,20 @@
+Package: designtester
+Title: Test Performance of Line Transect Designs
+Version: 0.0.1
+Authors@R: person("David", "Miller", email = "dave@ninepointeightone.net", role = c("aut", "cre"))
+Description: What the package does (one paragraph).
+Depends:
+    R (>= 3.3.0)
+License: GPL (>=2)
+Encoding: UTF-8
+LazyData: true
+Imports:
+    DSsim,
+    Distance,
+    dsm,
+    mrds,
+    sp,
+    rgdal,
+    shapefiles,
+    methods
+RoxygenNote: 5.0.1
