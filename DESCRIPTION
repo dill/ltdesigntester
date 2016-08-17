@@ -16,5 +16,7 @@ Imports:
     sp,
     rgdal,
     shapefiles,
+    mgcv,
+    plyr,
     methods
 RoxygenNote: 5.0.1
