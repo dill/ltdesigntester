@@ -11,7 +11,7 @@
 #' @import methods
 #' @import DSsim
 # @importMethodsFrom DSsim plot
-# @importClassesFrom DSsim LT.Survey
+# @importClassesFrom DSsim Survey.Results
 check_sim_setup <- function(simsetup) {
   # small function to plot the simulation setup input: simsetup - object
   # created by make.simulation() output: 4-panel plot of study region with
@@ -42,7 +42,8 @@ check_sim_setup <- function(simsetup) {
   plot_df(simsetup@detectability)
 
   # what actually happened
-  plot(eg.survey)
+  #plot(eg.survey)
+  plot_survey_results(eg.survey)
   # histogram of detection distances
   hist(dist.data$distance, xlab = "Distance (m)", main = "Distance Data")
 
