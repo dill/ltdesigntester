@@ -52,6 +52,8 @@ do_sim <- function(nsim, scenario, pred_dat, stratification){
     dist.data <- dsm_data$dist
     obs <- dsm_data$obs
     segs <- dsm_data$segs
+    rm(dist.data); gc()
+
     # rotated segs
     segs[,c("xr","yr")] <- t(R %*% t(segs[,c("x","y")]))
 

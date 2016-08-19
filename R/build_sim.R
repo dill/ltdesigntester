@@ -10,11 +10,12 @@
 #' @param n_pop true population size
 #' @param region_path path to region shapefile
 #' @param df detection function \code{list} (elements: \code{key}, \code{scale}, \code{shape}, \code{truncation})
+#' @param n_sim number of simulations to generate
 #' @return simulation object ready to be run with \code{create.survey.results}.
 #' @author David L Miller
 #' @export
 #' @importFrom shapefiles read.shapefile
-build_sim <- function(design_path, region_path, dsurf, df, n_pop=500,
+build_sim <- function(design_path, region_path, dsurf, df, n_pop=500, n_sim=1,
                       n_grid=NULL, n_grid_x=NULL, n_grid_y=NULL){
 
   if(is.null(n_grid_x) | is.null(n_grid_y)){
@@ -51,7 +52,7 @@ build_sim <- function(design_path, region_path, dsurf, df, n_pop=500,
                                      method = "ds", criteria = "AIC")
 
   # setup the simulation preferences
-  my_simulation <- DSsim::make.simulation(reps=1, single.transect.set=TRUE,
+  my_simulation <- DSsim::make.simulation(reps=n_sim, single.transect.set=TRUE,
                                    region.obj=region, design.obj=this_design,
                                    population.description.obj=pop.description,
                                    detectability.obj=detect,

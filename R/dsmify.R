@@ -6,6 +6,7 @@
 #' @return a \code{list} with three \code{data.frame}s: \code{obs} the observation table, \code{segs} the segment table and \code{dist} the distance data.
 #' @export
 #' @author David L Miller
+#' @importFrom DSsim get.distance.data
 dsmify <- function(survey){
 
   # distance data

@@ -4,8 +4,8 @@
 \alias{build_sim}
 \title{Create a survey object for simulations}
 \usage{
-build_sim(design_path, region_path, dsurf, df, n_pop = 500, n_grid = NULL,
-  n_grid_x = NULL, n_grid_y = NULL)
+build_sim(design_path, region_path, dsurf, df, n_pop = 500, n_sim = 1,
+  n_grid = NULL, n_grid_x = NULL, n_grid_y = NULL)
 }
 \arguments{
 \item{design_path}{the path to the design shapefile}
@@ -17,6 +17,8 @@ build_sim(design_path, region_path, dsurf, df, n_pop = 500, n_grid = NULL,
 \item{df}{detection function \code{list} (elements: \code{key}, \code{scale}, \code{shape}, \code{truncation})}
 
 \item{n_pop}{true population size}
+
+\item{n_sim}{number of simulations to generate}
 
 \item{n_grid}{number of cells in each direction in \code{dsurf} (assumed square)}
 
