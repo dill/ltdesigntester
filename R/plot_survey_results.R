@@ -1,4 +1,5 @@
 #' @export
+#' @importFrom graphics points segments
 plot_survey_results <- function(x, ...){
 
   plot(x@region@coords[[1]][[1]], type="l", asp=1)

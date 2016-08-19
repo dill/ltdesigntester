@@ -9,7 +9,10 @@ sample_df(df, distances)
 \arguments{
 \item{df}{\code{DSsim} \code{Detectability} object defining the detection function}
 
-\item{data}{\code{vector} of distances}
+\item{distances}{vector of distances}
+}
+\value{
+logical vector of the same length as \code{distances} indicating which objects were detected
 }
 \description{
 Sample data using a detection function

@@ -1,7 +1,8 @@
 #' Sample data using a detection function
 #'
 #' @param df \code{DSsim} \code{Detectability} object defining the detection function
-#' @param data \code{vector} of distances
+#' @param distances vector of distances
+#' @return logical vector of the same length as \code{distances} indicating which objects were detected
 sample_df <- function(df, distances){
 
   if(df@key.function=="hn"){

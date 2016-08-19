@@ -1,7 +1,16 @@
-#' Truncation from \code{survey_spec_list[[1]]} will be used.
-#' \code{survey_spec_list[[1]]} should only have two elements
+#' Set up a simulation with a 2-level covariate
+#'
+#' This sets up a simulation where we have a 2-level covariate, which we'll call "weather". This covariate will effect detectability and varies in space from left to right across the study area. The way in which it varies is controlled by a logistic function.
+#'
+#' \code{survey_spec_list[[1]]} should only have two elements. Truncation from \code{survey_spec_list[[1]]} will be used.
+#'
+#' @param survey_spec_list \code{list} of two simulation specs (results from \code{\link{build_sim}}
+#' @param logit_scale the scale of the logit use to define the covariate
+#' @param logit_location the location of the logit use to define the covariate
+#' @return a \code{list} with three \code{data.frame}s: \code{obs} the observation table, \code{segs} the segment table and \code{dist} the distance data.
+#' @author David L Miller
 #' @export
-do_sim_covar <- function(survey_spec_list){
+build_sim_covar <- function(survey_spec_list, logit_scale, logit_location){
 
   if(length(survey_spec_list)!=2){
     stop("survey_spec_list doesn't have exactly two elements")
@@ -16,7 +25,8 @@ do_sim_covar <- function(survey_spec_list){
 
   # calculate the distances to all possible (<truncation)
   all_dat <- calc.poss.detect.dists.lines(survey@population,
-                                          survey@transects, w_trunc)
+                                          survey@transects,
+                                          survey_spec@detectability@truncation)
 
   # make the detection function samples
   samp_1 <- sample_df(survey_spec_list[[1]]@detectability, all_dat$distance)
@@ -33,7 +43,8 @@ do_sim_covar <- function(survey_spec_list){
 
   # make the weather covariate per segment
   segs <- dat1$segs
-  segs$weather <- rbinom(nrow(segs), 1, plogis(segs$x, scale=0.1, location=1.5))
+  segs$weather <- rbinom(nrow(segs), 1, plogis(segs$x, scale=logit_scale,
+                                               location=logit_location))
 
   # now build the distance/observation data
   all_dat$Sample.Label <- all_dat$transect.ID
