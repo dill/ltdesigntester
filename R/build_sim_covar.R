@@ -45,6 +45,7 @@ build_sim_covar <- function(survey_spec_list, logit_scale, logit_location){
   segs <- dat1$segs
   segs$weather <- rbinom(nrow(segs), 1, plogis(segs$x, scale=logit_scale,
                                                location=logit_location))
+  segs$weather <- as.factor(segs$weather)
 
   # now build the distance/observation data
   all_dat$Sample.Label <- all_dat$transect.ID

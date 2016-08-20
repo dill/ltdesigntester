@@ -7,6 +7,8 @@
 #' @param scenario all the survey information, result of \code{\link{build_sim}}
 #' @param pred_dat prediction \code{data.frame}
 #' @param stratification the stratification scheme to use for the stratified Horvtiz-Thompson estimate, specified as internal cutpoints
+#' @param logit_opts \code{list} of length 2, of parameters (\code{scale} and \code{location}) for the logistic that controls the behaviour of covariates when they are used. See \code{\link{build_sim_covar}} for more details.
+#' @param transect_id vector of the same length as the number of segments, used to group them for the Horvitz-Thompson estimate
 #' @return \code{data.frame} with one row per (successful) simulation. The \code{data.frame} has the following columns:
 #' \describe{
 #' \item{\code{model}}{which model was fitted to the data}
@@ -20,14 +22,14 @@
 #' @export
 #' @author David L Miller
 #' @importFrom graphics plot
-#' @importFrom stats plnorm setNames
+#' @importFrom stats plnorm setNames plogis rbinom
 #' @importFrom utils setTxtProgressBar txtProgressBar
 #' @importFrom plyr ldply laply
 #' @importFrom Distance ds
 #' @importFrom mrds dht
 #' @importFrom dsm dsm dsm_varprop
 #' @importFrom mgcv tw
-do_sim <- function(nsim, scenario, pred_dat, stratification){
+do_sim <- function(nsim, scenario, pred_dat, stratification, logit_opts=NULL, transect_id=NULL){
 
   # results storage
   big_res <- c()
@@ -38,27 +40,52 @@ do_sim <- function(nsim, scenario, pred_dat, stratification){
   # rotation matrix
   R <- matrix(c(cos(pi/4), sin(pi/4), -sin(pi/4), cos(pi/4)),2,2)
 
-  # what is the true population size?
-  true_N <- scenario@population.description@N
 
   # iterate over the simulations
   for(ii in 1:nsim){
 
-    # generate a survey
-    survey_res <- DSsim::create.survey.results(scenario, dht.tables=TRUE)
+    if(length(scenario)==1){
+      # what is the true population size?
+      true_N <- scenario@population.description@N
 
-    # put the data in dsm format
-    dsm_data <- dsmify(survey_res)
+      # generate a survey
+      survey_res <- DSsim::create.survey.results(scenario, dht.tables=TRUE)
+
+      # put the data in dsm format
+      dsm_data <- dsmify(survey_res)
+    }else if(length(scenario)==2){
+      # pull these both for first si
+      # what is the true population size?
+      true_N <- scenario[[1]]@population.description@N
+      # generate a survey
+      survey_res <- DSsim::create.survey.results(scenario[[1]], dht.tables=TRUE)
+
+      # if we have a covariate simulation scenario is a list of two covariate
+      # levels, need to construct the data...
+
+      dsm_data <- build_sim_covar(list(ss_good, ss_bad),
+                                 logit_scale=logit_opts$scale,
+                                 logit_location=logit_opts$location)
+
+    }else{
+      stop("Neither one nor two simulation scenarios were supplied.")
+    }
+
+    # extract the data
     dist.data <- dsm_data$dist
     obs <- dsm_data$obs
     segs <- dsm_data$segs
-    rm(dist.data); gc()
 
     # rotated segs
     segs[,c("xr","yr")] <- t(R %*% t(segs[,c("x","y")]))
 
     # fit a detection function
     df_model <- suppressMessages(try(ds(dist.data, key="hr", adjustment=NULL)))
+    # if there is a weather covariate
+    if(length(scenario)==2){
+      df_model_cov <- suppressMessages(try(ds(dist.data, key="hr",
+                                              formula=~weather)))
+    }
 
     # if something goes wrong, move on
     if(any(class(df_model) == "try-error") || abs(df_model$ddf$par[1])<1e-6){
@@ -114,15 +141,28 @@ do_sim <- function(nsim, scenario, pred_dat, stratification){
     })
 
     # get N and CVs for the HT model
-    HT <- quick_dht(df_model, survey_res)
+    ht_data <- dhtify(dsm_data, survey_res, transect_id)
+    HT <- quick_dht(df_model, ht_data)
 
     # for the stratified model
-    HT_strat <- quick_dht_strat(df_model, survey_res, stratification)
+    #HT_strat <- quick_dht_strat(df_model, dsm_data, stratification)
 
     # bind them together
     all_res <- rbind.data.frame(all_res,
-                                c("HT", unname(HT)),
-                                c("HT_strat", unname(HT_strat)))
+                                c("HT", unname(HT)))#,
+                                #c("HT_strat", unname(HT_strat)))
+
+    if(length(scenario)==2){
+      HT_cov <- quick_dht(df_model_cov, ht_data)
+      #HT_strat_cov <- quick_dht_strat(df_model_cov, dsm_data,
+      #                                stratification)
+
+      # bind them together
+      all_res <- rbind.data.frame(all_res,
+                                  c("HT_cov", unname(HT_cov)))#,
+                                  #c("HT_strat_cov", unname(HT_strat_cov)))
+    }
+
 
     all_res$V1 <- as.numeric(all_res$V1)
     all_res$V2 <- as.numeric(all_res$V2)

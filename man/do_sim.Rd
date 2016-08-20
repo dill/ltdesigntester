@@ -4,7 +4,8 @@
 \alias{do_sim}
 \title{Run a simulation of a given scenario, fit models, report results}
 \usage{
-do_sim(nsim, scenario, pred_dat, stratification)
+do_sim(nsim, scenario, pred_dat, stratification, logit_opts = NULL,
+  transect_id = NULL)
 }
 \arguments{
 \item{nsim}{the number of simulations to run}
@@ -14,6 +15,10 @@ do_sim(nsim, scenario, pred_dat, stratification)
 \item{pred_dat}{prediction \code{data.frame}}
 
 \item{stratification}{the stratification scheme to use for the stratified Horvtiz-Thompson estimate, specified as internal cutpoints}
+
+\item{logit_opts}{\code{list} of length 2, of parameters (\code{scale} and \code{location}) for the logistic that controls the behaviour of covariates when they are used. See \code{\link{build_sim_covar}} for more details.}
+
+\item{transect_id}{vector of the same length as the number of segments, used to group them for the Horvitz-Thompson estimate}
 }
 \value{
 \code{data.frame} with one row per (successful) simulation. The \code{data.frame} has the following columns:

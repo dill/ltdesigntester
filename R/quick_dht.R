@@ -1,15 +1,13 @@
 # Get a quick Horvitz-Thompson estimate of N and CV(N)
 #' @export
-quick_dht <- function(df, survey_res){
-  aa <- dht(df$ddf, survey_res@region.table@region.table,
-            survey_res@sample.table@sample.table,
-            survey_res@obs.table@obs.table)
+quick_dht <- function(df, data){
+  aa <- dht(df$ddf, data$region, data$sample, data$obs)
   return(as.vector(aa$individuals$N[,c("Estimate","cv")][1,]))
 }
 
 # with stratification about x=1.5
 #' @export
-quick_dht_strat <- function(df, survey_res, strat){
+quick_dht_strat <- function(df, data, strat){
 
   # setup the region
   region <- survey_res@region.table@region.table
