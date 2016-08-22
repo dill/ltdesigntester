@@ -18,7 +18,6 @@ dhtify <- function(dsm_data, survey, transect_id){
     segs$Sample.Label <- segs$ID
     segs$Effort <- segs$length
   }else{
-    #segs[, c("start.X", "start.Y", "end.X", "end.Y", "ID", "d7.length")] <- NULL
     segs$Sample.Label <- transect_id
     segs <- ddply(segs, .(Sample.Label), summarize,
                   Effort=sum(length), Region.Label=unique(Region.Label))
