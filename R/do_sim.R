@@ -88,7 +88,13 @@ do_sim <- function(nsim, scenario, pred_dat, stratification, logit_opts=NULL, tr
     }
 
     # if something goes wrong, move on
-    if(any(class(df_model) == "try-error") || abs(df_model$ddf$par[1])<1e-6){
+    if(any(class(df_model) == "try-error") || abs(df_model$ddf$par[1])<1e-6 |
+       any(is.na(df_model$ddf$hessian))){
+      next
+    }
+    if(any(class(df_model_cov) == "try-error") ||
+       abs(df_model_cov$ddf$par[1])<1e-6 |
+       any(is.na(df_model_cov$ddf$hessian))){
       next
     }
 
@@ -109,23 +115,36 @@ do_sim <- function(nsim, scenario, pred_dat, stratification, logit_opts=NULL, tr
     }
 
     # thin plate
-    ll[["m_xy_tp"]] <- timer(dsm(count~s(x, y, bs="tp"), df_model, segs, obs,
-                                 method="REML", family=tw(a=1.2)))
+    ll[["m_xy_tp"]] <- suppressMessages(timer(dsm(count~s(x, y, bs="tp"),
+                                                  df_model_cov, segs, obs,
+                                                  method="REML",
+                                                  family=tw(a=1.2))))
     # thin plate te
-    ll[["m_xy_te"]] <- timer(dsm(count~te(x, y, bs="tp"), df_model, segs, obs,
-                                 method="REML", family=tw(a=1.2)))
+    ll[["m_xy_te"]] <- suppressMessages(timer(dsm(count~te(x, y, bs="tp"),
+                                                  df_model_cov, segs, obs,
+                                                  method="REML",
+                                                  family=tw(a=1.2))))
     # thin plate te
-    ll[["m_xyr_te"]] <- timer(dsm(count~te(xr, yr, bs="tp"), df_model, segs,
-                                  obs, method="REML", family=tw(a=1.2)))
+    ll[["m_xyr_te"]] <- suppressMessages(timer(dsm(count~te(xr, yr, bs="tp"),
+                                                   df_model_cov, segs, obs,
+                                                   method="REML",
+                                                   family=tw(a=1.2))))
     # thin plate rotation
-    ll[["m_xyr_tp"]] <- timer(dsm(count~s(xr, yr, bs="tp"), df_model, segs, obs,
-                                  method="REML", family=tw(a=1.2)))
+    ll[["m_xyr_tp"]] <- suppressMessages(timer(dsm(count~s(xr, yr, bs="tp"),
+                                                   df_model_cov, segs, obs,
+                                                   method="REML",
+                                                   family=tw(a=1.2))))
     # thin plate w/ shrinkage
-    ll[["m_xy_ts"]] <- timer(dsm(count~s(x, y, bs="ts"), df_model, segs, obs,
-                                 method="REML", family=tw(a=1.2)))
+    ll[["m_xy_ts"]] <- suppressMessages(timer(dsm(count~s(x, y, bs="ts"),
+                                                  df_model_cov, segs, obs,
+                                                  method="REML",
+                                                  family=tw(a=1.2))))
     # Duchon
-    ll[["m_xy_ds"]] <- timer(dsm(count~s(x, y, bs="ds", m=c(1, 0.5)), df_model,
-                                 segs, obs, method="REML", family=tw(a=1.2)))
+    ll[["m_xy_ds"]] <- suppressMessages(timer(dsm(count~s(x, y, bs="ds",
+                                                          m=c(1, 0.5)),
+                                                  df_model_cov, segs, obs,
+                                                  method="REML",
+                                                  family=tw(a=1.2))))
 
 
     # process -- get N and CVs for the spatial models
