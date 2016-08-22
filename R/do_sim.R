@@ -170,22 +170,21 @@ do_sim <- function(nsim, scenario, pred_dat, stratification, logit_opts=NULL, tr
     HT <- quick_dht(df_model, ht_data)
 
     # for the stratified model
-    #HT_strat <- quick_dht_strat(df_model, dsm_data, stratification)
+    HT_strat <- quick_dht_strat(df_model, ht_data, stratification)
 
     # bind them together
     all_res <- rbind.data.frame(all_res,
-                                c("HT", unname(HT)))#,
-                                #c("HT_strat", unname(HT_strat)))
+                                c("HT", unname(HT)),
+                                c("HT_strat", unname(HT_strat)))
 
     if(length(scenario)==2){
       HT_cov <- quick_dht(df_model_cov, ht_data)
-      #HT_strat_cov <- quick_dht_strat(df_model_cov, dsm_data,
-      #                                stratification)
+      HT_strat_cov <- quick_dht_strat(df_model_cov, ht_data, stratification)
 
       # bind them together
       all_res <- rbind.data.frame(all_res,
-                                  c("HT_cov", unname(HT_cov)))#,
-                                  #c("HT_strat_cov", unname(HT_strat_cov)))
+                                  c("HT_cov", unname(HT_cov)),
+                                  c("HT_strat_cov", unname(HT_strat_cov)))
     }
 
 
@@ -210,9 +209,9 @@ do_sim <- function(nsim, scenario, pred_dat, stratification, logit_opts=NULL, tr
                    xx[1:length(x$sp)] <- x$sp
                    xx})
     # no smoothing parameter for HT
-    sps <- rbind(sps, c(NA,NA))
+    sps <- rbind(sps, c(NA,NA), c(NA,NA))
     if(length(scenario)==2){
-      sps <- rbind(sps, c(NA,NA))
+      sps <- rbind(sps, c(NA,NA), c(NA,NA))
     }
 
     ## save # samples

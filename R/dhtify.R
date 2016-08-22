@@ -20,7 +20,9 @@ dhtify <- function(dsm_data, survey, transect_id){
   }else{
     segs$Sample.Label <- transect_id
     segs <- ddply(segs, .(Sample.Label), summarize,
-                  Effort=sum(length), Region.Label=unique(Region.Label))
+                  Effort=sum(length), Region.Label=unique(Region.Label),
+                  x_start=min(c(start.X, end.X), na.rm=TRUE),
+                  x_end=max(c(start.X, end.X), na.rm=TRUE))
   }
 
   # assemble observation table
