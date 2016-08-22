@@ -32,6 +32,11 @@ dhtify <- function(dsm_data, survey, transect_id){
   obs$Sample.Label <- obs$tr
   obs$tr <- NULL
 
+  if(!("Region.Label" %in% names(obs))){
+    obs$Region.Label <- obs$Region.Label.x
+    obs$Region.Label.y <- obs$Region.Label.x <- NULL
+  }
+
   obs$size <- 1
 
   return(list(region=survey@region.table@region.table, sample=segs, obs=obs))
