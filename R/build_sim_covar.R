@@ -28,16 +28,6 @@ build_sim_covar <- function(survey_spec_list, logit_scale, logit_location){
                                           survey@transects,
                                           survey_spec@detectability@truncation)
 
-  # make the detection function samples
-  samp_1 <- sample_df(survey_spec_list[[1]]@detectability, all_dat$distance)
-  samp_2 <- sample_df(survey_spec_list[[2]]@detectability, all_dat$distance)
-
-  # check plots
-  #plot(good@population@population[,c("x","y")],asp=1,pch=19, col="grey")
-  #points(all_dat[samp_1,][,c("x","y")],pch=19,col="green")
-  #points(all_dat[samp_2,][,c("x","y")],pch=19,col="blue")
-  #points(all_dat[samp_1 & samp_2,][,c("x","y")],pch=19,col="red")
-
   # get the data into the right format for dsm (only want seg table)
   dat1 <- dsmify(survey)
 
@@ -52,6 +42,15 @@ build_sim_covar <- function(survey_spec_list, logit_scale, logit_location){
   all_dat$transect.ID <- NULL
   all_dat <- merge(all_dat, segs[,c("weather","Sample.Label")],
                    by="Sample.Label")
+  # make the detection function samples
+  samp_1 <- sample_df(survey_spec_list[[1]]@detectability, all_dat$distance)
+  samp_2 <- sample_df(survey_spec_list[[2]]@detectability, all_dat$distance)
+
+  # check plots
+  #plot(good@population@population[,c("x","y")],asp=1,pch=19, col="grey")
+  #points(all_dat[samp_1,][,c("x","y")],pch=19,col="green")
+  #points(all_dat[samp_2,][,c("x","y")],pch=19,col="blue")
+  #points(all_dat[samp_1 & samp_2,][,c("x","y")],pch=19,col="red")
 
   # build the new combined data frame
   new_dat <- all_dat[samp_1 | samp_2,]

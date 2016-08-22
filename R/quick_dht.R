@@ -1,6 +1,8 @@
 # Get a quick Horvitz-Thompson estimate of N and CV(N)
 #' @export
 quick_dht <- function(df, data){
+  # kill the sample label, it's wrong!
+  df$ddf$data$Sample.Label <- NULL
   aa <- dht(df$ddf, data$region, data$sample, data$obs)
   return(as.vector(aa$individuals$N[,c("Estimate","cv")][1,]))
 }
@@ -10,14 +12,14 @@ quick_dht <- function(df, data){
 quick_dht_strat <- function(df, data, strat){
 
   # setup the region
-  region <- survey_res@region.table@region.table
+  region <- data$region
   region <- region[rep(seq(nrow(region)),length(strat)+1),]
   region$Region.Label <- 1:(length(strat)+1)
   region$Area <- diff(c(0, strat, 3))
 
   # merge the sample table onto the transect locations to
   # get the end of the transects to do stratification
-  samplet <- merge(survey_res@sample.table@sample.table,
+  samplet <- merge(data$sample.table,
                    survey_res@transects@sampler.info,
                    by.x="Sample.Label",by.y="ID")
 
