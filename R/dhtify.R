@@ -11,28 +11,24 @@ dhtify <- function(dsm_data, survey, transect_id){
 
   # assemble the sample table
   segs <- survey@transects@sampler.info
+  segs$Region.Label <- segs$region
+  segs$region <- NULL
+sh_segs <- segs
   if(is.null(transect_id)){
     segs$Sample.Label <- segs$ID
     segs$Effort <- segs$length
   }else{
     segs[, c("start.X", "start.Y", "end.X", "end.Y", "ID", "d7.length")] <- NULL
     segs$Sample.Label <- transect_id
-    segs_eff <- ddply(segs, .(Sample.Label), summarize, Effort=sum(length))
-    segs$Effort <- segs_eff$Effort
-    segs$length <- NULL
-    segs <- unique(segs)
+    segs <- ddply(segs, .(Sample.Label), summarize,
+                  Effort=sum(length), Region.Label=unique(Region.Label))
   }
-  segs$Region.Label <- segs$region
-  segs$region <- NULL
 
   # assemble observation table
-  obs <- dsm_data$obs#survey@obs.table@obs.table
-  sh_segs <- survey@transects@sampler.info
+  obs <- dsm_data$obs
   sh_segs$tr <- transect_id
   sh_segs$Sample.Label <- sh_segs$ID
-  sh_segs <- sh_segs[,c("Sample.Label", "tr", "region")]
-  sh_segs$Region.Label <- sh_segs$region
-  sh_segs$region <- NULL
+  sh_segs <- sh_segs[,c("Sample.Label", "tr", "Region.Label")]
   obs <- merge(obs, sh_segs, by="Sample.Label")
   obs$Sample.Label <- obs$tr
   obs$tr <- NULL
