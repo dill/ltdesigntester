@@ -95,3 +95,7 @@ check_sim_setup(ss)
 ```
 
 
+```{r sim-it}
+big_res <- do_sim(10, ss, pred_dat1, stratification,
+                  transect_id=transects)
+```
