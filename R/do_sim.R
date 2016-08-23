@@ -82,7 +82,7 @@ do_sim <- function(nsim, scenario, pred_dat, stratification, logit_opts=NULL, tr
     # fit a detection function
     df_model <- suppressMessages(try(ds(dist.data, key="hr", adjustment=NULL)))
     # if something goes wrong, move on
-    if(any(class(df_model) == "try-error") || abs(df_model$ddf$par[1])<1e-6 |
+    if(any(class(df_model) == "try-error") || abs(df_model$ddf$par[1])<1e-6 ||
        any(is.na(df_model$ddf$hessian))){
       next
     }
@@ -95,7 +95,7 @@ do_sim <- function(nsim, scenario, pred_dat, stratification, logit_opts=NULL, tr
                                               formula=~weather)))
 
       if(any(class(df_model_cov) == "try-error") ||
-         abs(df_model_cov$ddf$par[1])<1e-6 |
+         abs(df_model_cov$ddf$par[1])<1e-6 ||
          any(is.na(df_model_cov$ddf$hessian))){
         next
       }
