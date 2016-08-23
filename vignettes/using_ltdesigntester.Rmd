@@ -11,6 +11,11 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r, echo = FALSE, include = FALSE, cache = FALSE}
+library(knitr)
+opts_chunk$set(cache = TRUE)
+```
+
 # Introduction
 
 `ltdesigntester` is an R package to test basic survey designs and highlight potential issues with using simple estimators (such as Horvitz-Thompson-like estimators; henceforth HT) when animal distribution changes in space.
@@ -30,72 +35,195 @@ The following things are required to build a simulation:
 
 # A simple example
 
+Here is a simple example of how to setup and run a simulation. This could be used as a template for an analysis.
 
+First we need to load up the required R packages (note we use `suppressPackageStartupMessages` to minimize output to this document):
 
 ```{r load-pkgs}
 suppressPackageStartupMessages(library(DSsim))
 suppressPackageStartupMessages(library(dsm))
 suppressPackageStartupMessages(library(Distance))
 suppressPackageStartupMessages(library(ltdesigntester))
+suppressPackageStartupMessages(library(ggplot2))
 ```
 
-```{r setopts}
-true_N <- 500
+We then need to setup the ingredients for our simulation as above.
 
+## Study area shapefile
+
+We require the path to the data file in the shapefile directory. In this case the file is stored in the `ltdesigntester` package, so we need to use `system.file` to get its location:
+
+```{r setopts-studyarea}
+studyarea_shapefile <- paste0(system.file("shapes/region2/", package="ltdesigntester"),"data")
+```
+
+## Density surface
+
+```{r setopts-density}
 n_grid_x <- 300
 n_grid_y <- 100
 density.surface <- expand.grid(x = seq(0, 3, len=n_grid_x),
                                y = seq(0, 1, len=n_grid_y))
-# setup the prediction grid
-cell_side_x <- 0.05
-cell_side_y <- 0.05/3
-pred_dat1 <- expand.grid(x = seq(0, 3, by=cell_side_x),
-                         y = seq(0, 1, by=cell_side_y))
-# set the grid cell size
-pred_dat1$off.set <- cell_side_x*cell_side_y
-# rotation matrix
-R <- matrix(c(cos(pi/4), sin(pi/4), -sin(pi/4), cos(pi/4)),2,2)
-# rotate predictions
-pred_dat1[,c("xr","yr")] <- t(R %*% t(pred_dat1[,c("x","y")]))
+density.surface$density <- 5*(density.surface$x/3)
+```
+
+## Population size
+
+Setting the population size is straightforward, in this case, we choose 500 animals:
+
+```{r setopts-N}
+true_N <- 500
+```
+
+## Survey design shapefile
+
+We only require the path to the shapefile directory we need. In this case the file is stored in the `ltdesigntester` package, so we need to use `system.file` to get its location:
+
+```{r setopts-design}
+design_shapefile <- system.file("shapes/manyzigzags", package="ltdesigntester")
+```
+
+We also define a vector that is the same length as the number of segments in the design that allocates them to transects. These are use for the sample units in the Horvtiz-Thompson estimates.
+
+```{r setopts-design-tr}
+transects <- c(1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2,
+               2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4,
+               4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+               6, 6, 6, 6, 6, 6, 6, 6, 6)
+```
 
 
-# setup detection function
+## Detection function definition
+
+Setting up our detection function, we simply create a list with the relevant components. Here we setup a hazard-rate detection function (`"hr"`), with a scale parameter of `0.025` and shape parameter of `3`, and truncate our survey at `0.05` (this is the strip half-width).
+
+```{r setopts-df}
 df <- list(key        = "hr",
            scale      = 0.025,
            shape      = 3,
            truncation = 0.05)
 ```
 
-```{r}
-# setup densities
-density.surface$density <- 5*(density.surface$x/3)
+## Stratification scheme
 
-# stratification schemes
+Only a simple stratification is used here. At points on the `x` axis the survey will be stratified. The extremes of the survey area are used as end points, so the strata are [0,1), [1, 2), [2,3].
+
+```{r setopts}
 stratification <- c(1, 2)
-
-# transect definitions
-transects <- c(1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2,
-               2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4,
-               4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-               6, 6, 6, 6, 6, 6, 6, 6, 6)
-
 ```
 
+## Prediction grid
+
+Now setting up a simple prediction grid using the `expand.grid` function in R. For more complex boundaries, the `inSide` function in `mgcv` can be useful.
+
+```{r setopts-predgrid}
+cell_side_x <- 0.05
+cell_side_y <- 0.05/3
+pred_dat <- expand.grid(x = seq(0, 3, by=cell_side_x),
+                        y = seq(0, 1, by=cell_side_y))
+# set the grid cell size
+pred_dat$off.set <- cell_side_x*cell_side_y
+```
+
+We include a test using a rotated coordinate system in the simulation so an additional coordinate system (`xr`, `yr`) need to be added to the prediction data.
+
+```{r setopts-predgrid-rot}
+# rotation matrix
+R <- matrix(c(cos(pi/4), sin(pi/4), -sin(pi/4), cos(pi/4)),2,2)
+# rotate predictions
+pred_dat[,c("xr","yr")] <- t(R %*% t(pred_dat[,c("x","y")]))
+```
+
+
+## Building the simulation specification
+
+We put the parts we defined above together using `build_sim`:
+
 ```{r build-sim}
-# build simulation setup
-ss <- build_sim(system.file("shapes/manyzigzags", package="ltdesigntester"),
+ss <- build_sim(design_path = design_shapefile,
                 dsurf=density.surface,
                 n_grid_x=n_grid_x, n_grid_y=n_grid_y,
                 n_pop=true_N, df=df,
-                region=paste0(system.file("shapes/region2/", package="ltdesigntester"),"data"))
+                region=studyarea_shapefile)
 ```
+
+To check that our setup is correct we can do a dummy run and plot the output in a simple way:
 
 ```{r check-setup, fig.width=6, fig.height=6}
 check_sim_setup(ss)
 ```
 
+## Running a simulation
 
-```{r sim-it}
-big_res <- do_sim(10, ss, pred_dat1, stratification,
+To save time here, we simply run 10 replicates, using the setup we defined above (`ss`) using the stratification and transect definitions from above.
+
+```{r sim-it, results="hide"}
+big_res <- do_sim(10, ss, pred_dat, stratification,
                   transect_id=transects)
+```
+
+## Analysing results
+
+The simulation results are formatted as a `data.frame`, with one row per model result. We can look at the format here:
+
+```{r results-head}
+head(big_res)
+```
+
+Columns are as follows:
+
+  - `model` - identifier for the model
+  - `iter` - which simulation the results are from
+  - `quantile` - which quantile the true abundance lies in within the distribution of the estimated abundance
+  - `Nhat` - the estimated abundance
+  - `cvN` - the coefficient of variation of the estimated abundance
+  - `n` - the number of animals observed
+  - `sp1` - first smoothing paramater for spatial models
+  - `sp2` - second smoothing parameter for the spatial models
+
+Here we present two useful diagnostic plots using `ggplot2`:
+
+### Bias
+
+An easy diagnostic is the bias in the estimates of abundance. We first format the model names nicely:
+
+```{r plot-bias, fig.width=7, fig.height=6}
+# lookup for model names to short descriptions
+model_name_lookup <- list("HT" = "Horvitz-Thompson",
+                          "HT_strat" = "Horvitz-Thompson (stratified)",
+                          "m_xy_ds"  = "Duchon spline bivariate",
+                          "m_xy_te"  = "Thin plate tensor product",
+                          "m_xy_tp"  = "Thin plate bivariate",
+                          "m_xy_ts"  = "Thin plate with shrinkage bivariate",
+                          "m_xyr_tp"  = "Thin plate bivariate rotated",
+                          "m_xyr_te"  = "Thin plate tensor product rotated"
+                          )
+big_res$name <- unlist(model_name_lookup[big_res$model])
+big_res$bias <- big_res$N - true_N
+p <- ggplot(big_res)+
+       geom_boxplot(aes(name, bias)) +
+       labs(y="Bias", x="Model") +
+       coord_cartesian(ylim=c(-200,300)) +
+       theme_minimal() +
+       theme(axis.text.x = element_text(angle = 45, size=8)) +
+       geom_hline(aes(yintercept=0), colour="red")
+print(p)
+
+```
+
+### Quantile confidence
+
+We can also investigate where the true abundance lies within the estimated distribution of abundance from the model. If the distribution of the statistic is skewed to either end then we can infer under or over estimation of abundance for a particular estimator. A flat distribution shows good performance, whereas a "dome" in the middle indicates a conservative estimate in the sense that confidence intervals are slightly too wide. 
+
+These are less illustrative in this case, as we only have 10 replicates.
+
+```{r plot-quantile, fig.width=9, fig.height=7}
+p <- ggplot(big_res)+
+       geom_histogram(aes(quantile))+
+       facet_wrap(~name, nrow=2)+
+       geom_vline(xintercept=0.5) +
+       labs(y="Count", x="Quantile") +
+       theme(strip.text = element_text(size=4)) +
+       theme_minimal()
+print(p)
 ```
