@@ -1,6 +1,10 @@
+#' Plot results from a simulated survey
+#'
+#' Adapted from \code{DSsim}.
+#' @param x simulated survey object
 #' @export
 #' @importFrom graphics points segments
-plot_survey_results <- function(x, ...){
+plot_survey_results <- function(x){
 
   plot(x@region@coords[[1]][[1]], type="l", asp=1)
   segments(x0=x@transects@sampler.info$start.X,

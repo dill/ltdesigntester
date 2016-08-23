@@ -20,3 +20,6 @@ Imports:
     plyr,
     methods
 RoxygenNote: 5.0.1
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr

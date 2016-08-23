@@ -7,7 +7,11 @@
 dhtify(dsm_data, survey, transect_id)
 }
 \arguments{
+\item{dsm_data}{the survey results in \code{dsm}-compatible format (result of calling \code{\link{dsmify}})}
+
 \item{survey}{a simulated survey}
+
+\item{transect_id}{which transects do the segments belong to? Vector with the same length as the segment table in \code{dsm_data}}
 }
 \value{
 a \code{list} with three \code{data.frame}s: \code{obs} the observation table, \code{segs} the segment table and \code{dist} the distance data.

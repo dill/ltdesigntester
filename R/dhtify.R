@@ -2,11 +2,13 @@
 #'
 #' Get the simulated data and put it into a format that \code{dht} can use. The consists of creating the three tables used by \code{\link{dht}}.
 #'
+#' @param dsm_data the survey results in \code{dsm}-compatible format (result of calling \code{\link{dsmify}})
+#' @param transect_id which transects do the segments belong to? Vector with the same length as the segment table in \code{dsm_data}
 #' @param survey a simulated survey
 #' @return a \code{list} with three \code{data.frame}s: \code{obs} the observation table, \code{segs} the segment table and \code{dist} the distance data.
 #' @export
 #' @author David L Miller
-#' @importFrom plyr ddply
+#' @importFrom plyr ddply summarize "."
 dhtify <- function(dsm_data, survey, transect_id){
 
   # assemble the sample table
@@ -19,6 +21,8 @@ dhtify <- function(dsm_data, survey, transect_id){
     segs$Effort <- segs$length
   }else{
     segs$Sample.Label <- transect_id
+    # ugly hack to get around global var problem
+    Region.Label <- Sample.Label <- end.X <- start.X <- NULL
     segs <- ddply(segs, .(Sample.Label), summarize,
                   Effort=sum(length), Region.Label=unique(Region.Label),
                   x_start=min(c(start.X, end.X), na.rm=TRUE),

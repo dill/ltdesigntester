@@ -1,5 +1,7 @@
-# Get a quick Horvitz-Thompson estimate of N and CV(N)
+#' Get a quick Horvitz-Thompson estimate of N and CV(N)
 #' @export
+#' @inheritParams quick_dht_strat
+#' @param data the result of calling \code{\link{dsmify}}
 quick_dht <- function(df, data){
   # kill the sample label, it's wrong!
   df$ddf$data$Sample.Label <- NULL
@@ -7,11 +9,12 @@ quick_dht <- function(df, data){
   return(as.vector(aa$individuals$N[,c("Estimate","cv")][1,]))
 }
 
-# with stratification about x=1.5
+#' Get a quick stratified Horvitz-Thompson estimate of N and CV(N)
+#'
 #' @export
 #' @param df detection function
 #' @param dht_data the result of calling \code{\link{dhtify}}
-#' @param stratification a stratification scheme
+#' @param stratification a stratification scheme (at the moment, only points along the `x` axis are allowed
 quick_dht_strat <- function(df, dht_data, stratification){
 
   # setup the region

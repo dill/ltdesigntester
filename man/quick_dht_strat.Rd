@@ -2,6 +2,7 @@
 % Please edit documentation in R/quick_dht.R
 \name{quick_dht_strat}
 \alias{quick_dht_strat}
+\title{Get a quick stratified Horvitz-Thompson estimate of N and CV(N)}
 \usage{
 quick_dht_strat(df, dht_data, stratification)
 }
@@ -10,6 +11,9 @@ quick_dht_strat(df, dht_data, stratification)
 
 \item{dht_data}{the result of calling \code{\link{dhtify}}}
 
-\item{stratification}{a stratification scheme}
+\item{stratification}{a stratification scheme (at the moment, only points along the `x` axis are allowed}
+}
+\description{
+Get a quick stratified Horvitz-Thompson estimate of N and CV(N)
 }
 

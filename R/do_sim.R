@@ -63,7 +63,7 @@ do_sim <- function(nsim, scenario, pred_dat, stratification, logit_opts=NULL, tr
       # if we have a covariate simulation scenario is a list of two covariate
       # levels, need to construct the data...
 
-      dsm_data <- build_sim_covar(list(ss_good, ss_bad),
+      dsm_data <- build_sim_covar(list(scenario[[1]], scenario[[2]]),
                                  logit_scale=logit_opts$scale,
                                  logit_location=logit_opts$location)
 
