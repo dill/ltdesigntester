@@ -8,7 +8,7 @@ quick_dht_strat(df, dht_data, stratification)
 \arguments{
 \item{df}{detection function}
 
-\item{dht_data}{the result of calling \code{\lonk{dhtify}}}
+\item{dht_data}{the result of calling \code{\link{dhtify}}}
 
 \item{stratification}{a stratification scheme}
 }

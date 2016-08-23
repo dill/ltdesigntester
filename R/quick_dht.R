@@ -10,7 +10,7 @@ quick_dht <- function(df, data){
 # with stratification about x=1.5
 #' @export
 #' @param df detection function
-#' @param dht_data the result of calling \code{\lonk{dhtify}}
+#' @param dht_data the result of calling \code{\link{dhtify}}
 #' @param stratification a stratification scheme
 quick_dht_strat <- function(df, dht_data, stratification){
 
