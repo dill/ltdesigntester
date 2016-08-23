@@ -35,7 +35,7 @@ check_sim_setup <- function(simsetup) {
   image(z = matrix(den_obj$density, xdim, ydim),
         x = seq(min(den_obj$x), max(den_obj$x), len=xdim),
         y = seq(min(den_obj$y), max(den_obj$y), len=ydim),
-        xlab="X-coords (m)", ylab="Y-coords (m)",
+        xlab="x", ylab="y",
         col=heat.colors(50), asp=1)
 
   # plot the detection function
@@ -45,7 +45,7 @@ check_sim_setup <- function(simsetup) {
   #plot(eg.survey)
   plot_survey_results(eg.survey)
   # histogram of detection distances
-  hist(dist.data$distance, xlab = "Distance (m)", main = "Distance Data")
+  hist(dist.data$distance, xlab = "Distance", main = "Distance Data")
 
   # print some stuff
   cat("Observations:", nrow(dist.data), "\n")
