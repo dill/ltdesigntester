@@ -32,3 +32,66 @@ The following things are required to build a simulation:
 
 
 
+```{r load-pkgs}
+suppressPackageStartupMessages(library(DSsim))
+suppressPackageStartupMessages(library(dsm))
+suppressPackageStartupMessages(library(Distance))
+suppressPackageStartupMessages(library(ltdesigntester))
+```
+
+```{r setopts}
+true_N <- 500
+
+n_grid_x <- 300
+n_grid_y <- 100
+density.surface <- expand.grid(x = seq(0, 3, len=n_grid_x),
+                               y = seq(0, 1, len=n_grid_y))
+# setup the prediction grid
+cell_side_x <- 0.05
+cell_side_y <- 0.05/3
+pred_dat1 <- expand.grid(x = seq(0, 3, by=cell_side_x),
+                         y = seq(0, 1, by=cell_side_y))
+# set the grid cell size
+pred_dat1$off.set <- cell_side_x*cell_side_y
+# rotation matrix
+R <- matrix(c(cos(pi/4), sin(pi/4), -sin(pi/4), cos(pi/4)),2,2)
+# rotate predictions
+pred_dat1[,c("xr","yr")] <- t(R %*% t(pred_dat1[,c("x","y")]))
+
+
+# setup detection function
+df <- list(key        = "hr",
+           scale      = 0.025,
+           shape      = 3,
+           truncation = 0.05)
+```
+
+```{r}
+# setup densities
+density.surface$density <- 5*(density.surface$x/3)
+
+# stratification schemes
+stratification <- c(1, 2)
+
+# transect definitions
+transects <- c(1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2,
+               2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4,
+               4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+               6, 6, 6, 6, 6, 6, 6, 6, 6)
+
+```
+
+```{r build-sim}
+# build simulation setup
+ss <- build_sim(system.file("shapes/manyzigzags", package="ltdesigntester"),
+                dsurf=density.surface,
+                n_grid_x=n_grid_x, n_grid_y=n_grid_y,
+                n_pop=true_N, df=df,
+                region=paste0(system.file("shapes/region2/", package="ltdesigntester"),"data"))
+```
+
+```{r check-setup, fig.width=6, fig.height=6}
+check_sim_setup(ss)
+```
+
+

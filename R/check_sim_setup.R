@@ -36,7 +36,7 @@ check_sim_setup <- function(simsetup) {
         x = seq(min(den_obj$x), max(den_obj$x), len=xdim),
         y = seq(min(den_obj$y), max(den_obj$y), len=ydim),
         xlab="X-coords (m)", ylab="Y-coords (m)",
-        col=heat.colors(50))
+        col=heat.colors(50), asp=1)
 
   # plot the detection function
   plot_df(simsetup@detectability)
