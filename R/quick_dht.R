@@ -2,6 +2,7 @@
 #' @export
 #' @inheritParams quick_dht_strat
 #' @param data the result of calling \code{\link{dsmify}}
+#' @return vector of length 2 with abundance and CV
 quick_dht <- function(df, data){
   # kill the sample label, it's wrong!
   df$ddf$data$Sample.Label <- NULL
@@ -14,22 +15,24 @@ quick_dht <- function(df, data){
 #' @export
 #' @param df detection function
 #' @param dht_data the result of calling \code{\link{dhtify}}
-#' @param stratification a stratification scheme (at the moment, only points along the `x` axis are allowed
-quick_dht_strat <- function(df, dht_data, stratification){
+#' @param stratification a stratification scheme (at the moment, only points along the \code{x} axis are allowed)
+#' @param xlims vector of length 2 with limits of the region in the \code{x} direction
+#' @return vector of length 2 with abundance and CV
+quick_dht_strat <- function(df, dht_data, stratification, xlims){
 
   # setup the region
   region <- dht_data$region
   region <- region[rep(seq(nrow(region)),length(stratification)+1),]
   region$Region.Label <- 1:(length(stratification)+1)
-  region$Area <- diff(c(0, stratification, 3))
+  region$Area <- diff(c(xlims[1], stratification, xlims[2]))
 
   # merge the sample table onto the transect locations to
   # get the end of the transects to do stratificationification
   samplet <- dht_data$sample
 
   # build the stratificationum data
-  begin_stratum <- c(0,stratification)
-  end_stratum   <- c(stratification,3)
+  begin_stratum <- c(xlims[1], stratification)
+  end_stratum   <- c(stratification, xlims[2])
   region.labs <- rep(NA, nrow(samplet))
   for(i_strat in 1:length(begin_stratum)){
     ind <- samplet$x_end <= end_stratum[i_strat] &

@@ -53,6 +53,9 @@ do_sim <- function(nsim, scenario, pred_dat, stratification, logit_opts=NULL, tr
 
       # put the data in dsm format
       dsm_data <- dsmify(survey_res)
+
+      # get the limits of the design in the x direction
+      xlims <- scenario@region@box[c("xmin","xmax")]
     }else if(length(scenario)==2){
       # pull these both for first si
       # what is the true population size?
@@ -62,11 +65,12 @@ do_sim <- function(nsim, scenario, pred_dat, stratification, logit_opts=NULL, tr
 
       # if we have a covariate simulation scenario is a list of two covariate
       # levels, need to construct the data...
-
       dsm_data <- build_sim_covar(list(scenario[[1]], scenario[[2]]),
                                  logit_scale=logit_opts$scale,
                                  logit_location=logit_opts$location)
 
+      # get the limits of the design in the x direction
+      xlims <- scenario[[1]]@region@box[c("xmin","xmax")]
     }else{
       stop("Neither one nor two simulation scenarios were supplied.")
     }
@@ -165,29 +169,32 @@ do_sim <- function(nsim, scenario, pred_dat, stratification, logit_opts=NULL, tr
       }
     })
 
+    ## Horvtiz-Thompson-like estimates
+
     # get N and CVs for the HT model
     ht_data <- dhtify(dsm_data, survey_res, transect_id)
     HT <- quick_dht(df_model, ht_data)
 
     # for the stratified model
-    HT_strat <- quick_dht_strat(df_model, ht_data, stratification)
+    HT_strat <- quick_dht_strat(df_model, ht_data, stratification, xlims)
 
     # bind them together
     all_res <- rbind.data.frame(all_res,
                                 c("HT", unname(HT)),
                                 c("HT_strat", unname(HT_strat)))
 
+    # if we have covariates
     if(length(scenario)==2){
       HT_cov <- quick_dht(df_model_cov, ht_data)
-      HT_strat_cov <- quick_dht_strat(df_model_cov, ht_data, stratification)
-
+      HT_strat_cov <- quick_dht_strat(df_model_cov, ht_data,
+                                      stratification, xlims)
       # bind them together
       all_res <- rbind.data.frame(all_res,
                                   c("HT_cov", unname(HT_cov)),
                                   c("HT_strat_cov", unname(HT_strat_cov)))
     }
 
-
+    # ensure we have numeric values
     all_res$V1 <- as.numeric(all_res$V1)
     all_res$V2 <- as.numeric(all_res$V2)
 

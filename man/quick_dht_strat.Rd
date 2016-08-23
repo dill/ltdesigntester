@@ -4,14 +4,19 @@
 \alias{quick_dht_strat}
 \title{Get a quick stratified Horvitz-Thompson estimate of N and CV(N)}
 \usage{
-quick_dht_strat(df, dht_data, stratification)
+quick_dht_strat(df, dht_data, stratification, xlims)
 }
 \arguments{
 \item{df}{detection function}
 
 \item{dht_data}{the result of calling \code{\link{dhtify}}}
 
-\item{stratification}{a stratification scheme (at the moment, only points along the `x` axis are allowed}
+\item{stratification}{a stratification scheme (at the moment, only points along the \code{x} axis are allowed)}
+
+\item{xlims}{vector of length 2 with limits of the region in the \code{x} direction}
+}
+\value{
+vector of length 2 with abundance and CV
 }
 \description{
 Get a quick stratified Horvitz-Thompson estimate of N and CV(N)
