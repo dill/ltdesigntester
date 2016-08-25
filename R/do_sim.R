@@ -54,8 +54,9 @@ do_sim <- function(nsim, scenario, pred_dat, stratification, logit_opts=NULL, tr
       # put the data in dsm format
       dsm_data <- dsmify(survey_res)
 
-      # get the limits of the design in the x direction
-      xlims <- scenario@region@box[c("xmin","xmax")]
+      # get the limits of the design in the x and y direction
+      xlims <- scenario@region@box[c("xmin", "xmax")]
+      ylims <- scenario@region@box[c("ymin", "ymax")]
     }else if(length(scenario)==2){
       # pull these both for first si
       # what is the true population size?
@@ -69,8 +70,9 @@ do_sim <- function(nsim, scenario, pred_dat, stratification, logit_opts=NULL, tr
                                  logit_scale=logit_opts$scale,
                                  logit_location=logit_opts$location)
 
-      # get the limits of the design in the x direction
-      xlims <- scenario[[1]]@region@box[c("xmin","xmax")]
+      # get the limits of the design in the x and y direction
+      xlims <- scenario[[1]]@region@box[c("xmin", "xmax")]
+      ylims <- scenario[[1]]@region@box[c("ymin", "ymax")]
     }else{
       stop("Neither one nor two simulation scenarios were supplied.")
     }
@@ -176,7 +178,7 @@ do_sim <- function(nsim, scenario, pred_dat, stratification, logit_opts=NULL, tr
     HT <- quick_dht(df_model, ht_data)
 
     # for the stratified model
-    HT_strat <- quick_dht_strat(df_model, ht_data, stratification, xlims)
+    HT_strat <- quick_dht_strat(df_model, ht_data, stratification, xlims, ylims)
 
     # bind them together
     all_res <- rbind.data.frame(all_res,
@@ -187,7 +189,7 @@ do_sim <- function(nsim, scenario, pred_dat, stratification, logit_opts=NULL, tr
     if(length(scenario)==2){
       HT_cov <- quick_dht(df_model_cov, ht_data)
       HT_strat_cov <- quick_dht_strat(df_model_cov, ht_data,
-                                      stratification, xlims)
+                                      stratification, xlims, ylims)
       # bind them together
       all_res <- rbind.data.frame(all_res,
                                   c("HT_cov", unname(HT_cov)),

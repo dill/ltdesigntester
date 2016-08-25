@@ -14,6 +14,8 @@ quick_dht_strat(df, dht_data, stratification, xlims)
 \item{stratification}{a stratification scheme (at the moment, only points along the \code{x} axis are allowed)}
 
 \item{xlims}{vector of length 2 with limits of the region in the \code{x} direction}
+
+\item{ylims}{vector of length 2 with limits of the region in the \code{y} direction}
 }
 \value{
 vector of length 2 with abundance and CV

@@ -47,7 +47,7 @@ build_sim_covar <- function(survey_spec_list, logit_scale, logit_location){
   samp_2 <- sample_df(survey_spec_list[[2]]@detectability, all_dat$distance)
 
   # check plots
-  #plot(good@population@population[,c("x","y")],asp=1,pch=19, col="grey")
+  #plot(survey@population@population[,c("x","y")],asp=1,pch=19, col="grey")
   #points(all_dat[samp_1,][,c("x","y")],pch=19,col="green")
   #points(all_dat[samp_2,][,c("x","y")],pch=19,col="blue")
   #points(all_dat[samp_1 & samp_2,][,c("x","y")],pch=19,col="red")
@@ -63,10 +63,10 @@ build_sim_covar <- function(survey_spec_list, logit_scale, logit_location){
   #hist(new_dat$distance[new_dat$weather==1], main="weather=1, bad weather")
 
   #par(mfrow=c(1,2))
-  #plot(good@population@population[,c("x","y")],asp=1,pch=19, col="grey")
+  #plot(survey@population@population[,c("x","y")],asp=1,pch=19, col="grey")
   #points(all_dat[samp_1,][,c("x","y")],pch="g",col="green")
   #points(all_dat[samp_2,][,c("x","y")],pch="b",col="blue")
-  #plot(good@population@population[,c("x","y")],asp=1,pch=19, col="grey")
+  #plot(survey@population@population[,c("x","y")],asp=1,pch=19, col="grey")
   #points(new_dat[new_dat$weather==0,][,c("x","y")],pch="0",col="green")
   #points(new_dat[new_dat$weather==1,][,c("x","y")],pch="1",col="blue")
 

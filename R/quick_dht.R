@@ -17,14 +17,15 @@ quick_dht <- function(df, data){
 #' @param dht_data the result of calling \code{\link{dhtify}}
 #' @param stratification a stratification scheme (at the moment, only points along the \code{x} axis are allowed)
 #' @param xlims vector of length 2 with limits of the region in the \code{x} direction
+#' @param ylims vector of length 2 with limits of the region in the \code{y} direction
 #' @return vector of length 2 with abundance and CV
-quick_dht_strat <- function(df, dht_data, stratification, xlims){
+quick_dht_strat <- function(df, dht_data, stratification, xlims, ylims){
 
   # setup the region
   region <- dht_data$region
   region <- region[rep(seq(nrow(region)),length(stratification)+1),]
   region$Region.Label <- 1:(length(stratification)+1)
-  region$Area <- diff(c(xlims[1], stratification, xlims[2]))
+  region$Area <- diff(c(xlims[1], stratification, xlims[2]))*diff(ylims)
 
   # merge the sample table onto the transect locations to
   # get the end of the transects to do stratificationification
