@@ -7,6 +7,9 @@ library(ltdesigntester)
 ### simple region shapefile
 region_big <- data.frame(x=c(0,0,3,3,0),
                          y=c(0,2.5,2.5,0,0))
+R <- matrix(c(cos(pi/2), sin(pi/2), -sin(pi/2), cos(pi/2)),2,2)
+region_big[,c("x","y")] <- t(R %*% t(region_big[,c("x","y")]))
+
 
 plot(region_big, asp=1, type="l")
 
@@ -59,9 +62,12 @@ zzll$x <- zzll$x*3
 zzll$leg <- c(rep("7", n_segs),
               rep("8", n_segs))
 
-lines(zzll[,c("x","y")], type="l", asp=1)
 
 tb <- rbind.data.frame(mzz2, zzll)
+tb[,c("x","y")] <- t(R %*% t(tb[,c("x","y")]))
+
+
+lines(tb[,c("x","y")], type="l", asp=1)
 
 write_transects(tb, "shapes/tb")
 
