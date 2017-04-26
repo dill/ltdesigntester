@@ -28,8 +28,13 @@ build_sim <- function(design_path, region_path, dsurf, df, n_pop=500, n_sim=1,
                                shapefile = region.shapefile)
 
   # populate the region with the density
+  if(length(region@coords) > 1){
+    stop("You're using a region with multiple polygons? Everything will break. E-mail Dave for support!")
+  }
+  x.space <- diff(range(region@coords[[1]][[1]][,1]))/n_grid_x
+  y.space <- diff(range(region@coords[[1]][[1]][,1]))/n_grid_y
   pop.density <- DSsim::make.density(region=region, density.surface=list(dsurf),
-                                     x.space = 1/n_grid_x, y.space = 1/n_grid_y)
+                                     x.space = x.space, y.space = y.space)
 
   pop.description <- DSsim::make.population.description(region.obj=region,
                                 density.obj=pop.density, N=n_pop, fixed.N=TRUE)
