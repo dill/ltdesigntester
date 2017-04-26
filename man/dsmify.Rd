@@ -18,4 +18,3 @@ Get the simulated data and put it into a format that \code{dsm} can use. The con
 \author{
 David L Miller
 }
-

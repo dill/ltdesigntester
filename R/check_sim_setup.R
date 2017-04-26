@@ -29,14 +29,15 @@ check_sim_setup <- function(simsetup) {
   #plot(simsetup@population.description@density,
   #     plot.units = "m", style="blocks",
   #     density.col=heat.colors(50))
-  den_obj <- simsetup@population.description@density@density.surface[[1]]
-  xdim <- attr(den_obj, "out.attrs")$dim[1]
-  ydim <- attr(den_obj, "out.attrs")$dim[2]
-  image(z = matrix(den_obj$density, xdim, ydim),
-        x = seq(min(den_obj$x), max(den_obj$x), len=xdim),
-        y = seq(min(den_obj$y), max(den_obj$y), len=ydim),
-        xlab="x", ylab="y",
-        col=heat.colors(50), asp=1)
+  #den_obj <- simsetup@population.description@density@density.surface[[1]]
+  #xdim <- attr(den_obj, "out.attrs")$dim[1]
+  #ydim <- attr(den_obj, "out.attrs")$dim[2]
+  #image(z = matrix(den_obj$density, xdim, ydim),
+  #      x = seq(min(den_obj$x), max(den_obj$x), len=xdim),
+  #      y = seq(min(den_obj$y), max(den_obj$y), len=ydim),
+  #      xlab="x", ylab="y",
+  #      col=heat.colors(50), asp=1)
+  plot(simsetup@population.description@density, main = "")
 
   # plot the detection function
   plot_df(simsetup@detectability)

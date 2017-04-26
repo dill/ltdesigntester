@@ -17,4 +17,3 @@ vector of length 2 with abundance and CV
 \description{
 Get a quick Horvitz-Thompson estimate of N and CV(N)
 }
-

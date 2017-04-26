@@ -17,4 +17,3 @@ logical vector of the same length as \code{distances} indicating which objects w
 \description{
 Sample data using a detection function
 }
-

@@ -20,4 +20,3 @@ Given a \code{data.frame} with the locations of transect legs in it, create a sh
 \author{
 David L Miller
 }
-

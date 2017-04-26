@@ -4,7 +4,7 @@
 \alias{quick_dht_strat}
 \title{Get a quick stratified Horvitz-Thompson estimate of N and CV(N)}
 \usage{
-quick_dht_strat(df, dht_data, stratification, xlims)
+quick_dht_strat(df, dht_data, stratification, xlims, ylims)
 }
 \arguments{
 \item{df}{detection function}
@@ -23,4 +23,3 @@ vector of length 2 with abundance and CV
 \description{
 Get a quick stratified Horvitz-Thompson estimate of N and CV(N)
 }
-

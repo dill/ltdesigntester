@@ -12,4 +12,3 @@ plot_survey_results(x)
 \description{
 Adapted from \code{DSsim}.
 }
-

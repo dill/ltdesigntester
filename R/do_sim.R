@@ -21,13 +21,14 @@
 #' \item{\code{sp2}}{smoothing parameter 2}}
 #' @export
 #' @author David L Miller
-#' @importFrom graphics plot
+# @importFrom graphics plot
+#' @importFrom DSsim plot
 #' @importFrom stats plnorm setNames plogis rbinom
 #' @importFrom utils setTxtProgressBar txtProgressBar
 #' @importFrom plyr ldply laply
 #' @importFrom Distance ds
 #' @importFrom mrds dht
-#' @importFrom dsm dsm dsm_varprop
+# @importFrom dsm dsm dsm_varprop
 #' @importFrom mgcv tw
 do_sim <- function(nsim, scenario, pred_dat, stratification, logit_opts=NULL, transect_id=NULL){
 

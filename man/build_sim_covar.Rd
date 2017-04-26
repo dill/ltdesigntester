@@ -25,4 +25,3 @@ This sets up a simulation where we have a 2-level covariate, which we'll call "w
 \author{
 David L Miller
 }
-

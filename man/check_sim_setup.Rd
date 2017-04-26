@@ -18,4 +18,3 @@ Show some plots to check if a survey has been setup properly. Produces an image 
 \author{
 David L Miller, based on code from Laura Marshall.
 }
-

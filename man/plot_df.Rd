@@ -18,4 +18,3 @@ Plot the detection function as specified by a \code{DSsim} "Detectability" objec
 \author{
 David L Miller
 }
-

@@ -35,4 +35,3 @@ Build a survey object using machinery from \code{DSsim}. Specify a design, regio
 \author{
 David L Miller
 }
-

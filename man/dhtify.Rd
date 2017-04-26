@@ -22,4 +22,3 @@ Get the simulated data and put it into a format that \code{dht} can use. The con
 \author{
 David L Miller
 }
-

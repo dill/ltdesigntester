@@ -22,4 +22,3 @@ Assumes a log-Normal distribution for the quantity in question.
 \author{
 David L Miller
 }
-
