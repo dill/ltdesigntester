@@ -40,10 +40,16 @@ build_sim <- function(design_path, region_path, dsurf, df, n_pop=500, n_sim=1,
                                 density.obj=pop.density, N=n_pop, fixed.N=TRUE)
 
   # build the detection function
-  detect <- DSsim::make.detectability(key.function = df$key,
-                                      scale.param = df$scale,
-                                      shape.param = df$shape,
-                                      truncation = df$truncation)
+  if(df$key=="hr"){
+    detect <- DSsim::make.detectability(key.function = df$key,
+                                        scale.param = df$scale,
+                                        shape.param = df$shape,
+                                        truncation = df$truncation)
+  }else{
+    detect <- DSsim::make.detectability(key.function = df$key,
+                                        scale.param = df$scale,
+                                        truncation = df$truncation)
+  }
 
   this_design <- DSsim::make.design(transect.type = "Line",
                                     design.details = c("user specified"),
