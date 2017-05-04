@@ -30,7 +30,7 @@
 #' @importFrom mrds dht
 # @importFrom dsm dsm dsm_varprop
 #' @importFrom mgcv tw
-do_sim <- function(nsim, scenario, pred_dat, stratification, logit_opts=NULL, transect_id=NULL){
+do_sim <- function(nsim, scenario, pred_dat, stratification=c(), logit_opts=NULL, transect_id=NULL, cov_values=NULL){
 
   # results storage
   big_res <- c()
@@ -58,6 +58,23 @@ do_sim <- function(nsim, scenario, pred_dat, stratification, logit_opts=NULL, tr
       # get the limits of the design in the x and y direction
       xlims <- scenario@region@box[c("xmin", "xmax")]
       ylims <- scenario@region@box[c("ymin", "ymax")]
+    }else if(length(scenario)>=2 & !is.null(cov_values)){
+      # pull these both for first si
+      # what is the true population size?
+      true_N <- scenario[[length(scenario)]]@population.description@N
+      # generate a survey
+      survey_res <- DSsim::create.survey.results(scenario[[length(scenario)]],
+                                                 dht.tables=TRUE)
+
+      # if we have a covariate simulation scenario is a list of two covariate
+      # levels, need to construct the data...
+      dsm_data <- build_sim_covar_measured(scenario,cov_values)
+
+      # get the limits of the design in the x and y direction
+      xlims <- scenario[[1]]@region@box[c("xmin", "xmax")]
+      ylims <- scenario[[1]]@region@box[c("ymin", "ymax")]
+
+
     }else if(length(scenario)==2){
       # pull these both for first si
       # what is the true population size?
@@ -97,7 +114,7 @@ do_sim <- function(nsim, scenario, pred_dat, stratification, logit_opts=NULL, tr
     dsm_df_model <- df_model
 
     # if there is a weather covariate
-    if(length(scenario)==2){
+    if(length(scenario)>1){
       df_model_cov <- suppressMessages(try(ds(dist.data, key="hr",
                                               formula=~weather)))
 
@@ -178,23 +195,33 @@ do_sim <- function(nsim, scenario, pred_dat, stratification, logit_opts=NULL, tr
     ht_data <- dhtify(dsm_data, survey_res, transect_id)
     HT <- quick_dht(df_model, ht_data)
 
-    # for the stratified model
-    HT_strat <- quick_dht_strat(df_model, ht_data, stratification, xlims, ylims)
-
     # bind them together
     all_res <- rbind.data.frame(all_res,
-                                c("HT", unname(HT)),
-                                c("HT_strat", unname(HT_strat)))
+                                c("HT", unname(HT)))
+
+    # for the stratified model
+    if(length(stratification)>0){
+      HT_strat <- quick_dht_strat(df_model, ht_data, stratification,
+                                  xlims, ylims)
+      all_res <- rbind.data.frame(all_res,
+                                  c("HT_strat", unname(HT_strat)))
+    }
+
 
     # if we have covariates
-    if(length(scenario)==2){
+    if(length(scenario)>1){
       HT_cov <- quick_dht(df_model_cov, ht_data)
-      HT_strat_cov <- quick_dht_strat(df_model_cov, ht_data,
-                                      stratification, xlims, ylims)
       # bind them together
       all_res <- rbind.data.frame(all_res,
-                                  c("HT_cov", unname(HT_cov)),
-                                  c("HT_strat_cov", unname(HT_strat_cov)))
+                                  c("HT_cov", unname(HT_cov)))
+
+      if(length(stratification)>0){
+        HT_strat_cov <- quick_dht_strat(df_model_cov, ht_data,
+                                        stratification, xlims, ylims)
+        # bind them together
+        all_res <- rbind.data.frame(all_res,
+                                    c("HT_strat_cov", unname(HT_strat_cov)))
+      }
     }
 
     # ensure we have numeric values

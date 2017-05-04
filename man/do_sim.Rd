@@ -4,8 +4,8 @@
 \alias{do_sim}
 \title{Run a simulation of a given scenario, fit models, report results}
 \usage{
-do_sim(nsim, scenario, pred_dat, stratification, logit_opts = NULL,
-  transect_id = NULL)
+do_sim(nsim, scenario, pred_dat, stratification = c(), logit_opts = NULL,
+  transect_id = NULL, cov_values = NULL)
 }
 \arguments{
 \item{nsim}{the number of simulations to run}
