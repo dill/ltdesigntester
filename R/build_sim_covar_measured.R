@@ -9,14 +9,14 @@
 #' @return a \code{list} with three \code{data.frame}s: \code{obs} the observation table, \code{segs} the segment table and \code{dist} the distance data.
 #' @author David L Miller
 #' @export
-build_sim_covar_measured <- function(survey_spec_list, cov_values){
+build_sim_covar_measured <- function(survey_spec_list, cov_values, survey){
 
   # get the master spec
   survey_spec <- survey_spec_list[[length(survey_spec_list)]]
 
   # get "survey results" -- just using this to generate population
   # locations
-  survey <- DSsim::create.survey.results(survey_spec, dht.tables=TRUE)
+#  survey <- DSsim::create.survey.results(survey_spec, dht.tables=TRUE)
 
   # calculate the distances to all possible (<truncation)
   # (this step actually gets carried out in the above call but the
@@ -44,6 +44,7 @@ build_sim_covar_measured <- function(survey_spec_list, cov_values){
   for(i in seq_along(survey_spec_list)){
     samp[, i] <-  sample_df(survey_spec_list[[i]]@detectability,
                             all_dat$distance)
+    samp[, i][all_dat$weather != names(survey_spec_list)[i]] <- FALSE
   }
 
   # check plots
@@ -54,8 +55,19 @@ build_sim_covar_measured <- function(survey_spec_list, cov_values){
   #}
 
   # build the new combined data frame
-  new_dat <- all_dat[apply(samp, 2, any), ]
-  new_dat <- new_dat[!duplicated(new_dat$object),]
+  new_dat <- all_dat[apply(samp, 1, any), ]
+
+  # deal with duplicates
+  dupes <- duplicated(new_dat$object)
+  if(any(dupes)){
+    tt <- table(new_dat$object)[table(new_dat$object)>1]
+    for(i in seq_along(names(tt))){
+      allo <- new_dat$object == as.numeric(names(tt))[i]
+      saver <- new_dat[allo, ,drop=FALSE][sample(1:sum(allo), 1), ,drop=FALSE]
+      new_dat <- new_dat[-which(allo), ]
+      new_dat <- rbind(new_dat, saver)
+    }
+  }
 
   # check histograms of distances
   #par(mfrow=c(1,length(survey_spec_list)+1))

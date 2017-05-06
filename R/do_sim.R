@@ -68,7 +68,7 @@ do_sim <- function(nsim, scenario, pred_dat, stratification=c(), logit_opts=NULL
 
       # if we have a covariate simulation scenario is a list of two covariate
       # levels, need to construct the data...
-      dsm_data <- build_sim_covar_measured(scenario,cov_values)
+      dsm_data <- build_sim_covar_measured(scenario, cov_values, survey_res)
 
       # get the limits of the design in the x and y direction
       xlims <- scenario[[1]]@region@box[c("xmin", "xmax")]
@@ -106,7 +106,7 @@ do_sim <- function(nsim, scenario, pred_dat, stratification=c(), logit_opts=NULL
     # fit a detection function
     df_model <- suppressMessages(try(ds(dist.data, key="hr", adjustment=NULL)))
     # if something goes wrong, move on
-    if(any(class(df_model) == "try-error") || abs(df_model$ddf$par[1])<1e-6 ||
+    if(any(class(df_model) == "try-error") || #abs(df_model$ddf$par[1])<1e-6 ||
        any(is.na(df_model$ddf$hessian))){
       next
     }
@@ -119,7 +119,7 @@ do_sim <- function(nsim, scenario, pred_dat, stratification=c(), logit_opts=NULL
                                               formula=~weather)))
 
       if(any(class(df_model_cov) == "try-error") ||
-         abs(df_model_cov$ddf$par[1])<1e-6 ||
+         #abs(df_model_cov$ddf$par[1])<1e-6 ||
          any(is.na(df_model_cov$ddf$hessian))){
         next
       }
