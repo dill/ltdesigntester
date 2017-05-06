@@ -247,7 +247,7 @@ do_sim <- function(nsim, scenario, pred_dat, stratification=c(), logit_opts=NULL
                    xx})
     # no smoothing parameter for HT
     sps <- rbind(sps, c(NA,NA), c(NA,NA))
-    if(length(scenario)==2){
+    if(length(scenario)==2 & is.null(cov_values)){
       sps <- rbind(sps, c(NA,NA), c(NA,NA))
     }
 
