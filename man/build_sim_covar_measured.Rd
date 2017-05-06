@@ -4,7 +4,7 @@
 \alias{build_sim_covar_measured}
 \title{Set up a simulation with a measured covariate}
 \usage{
-build_sim_covar_measured(survey_spec_list, cov_values)
+build_sim_covar_measured(survey_spec_list, cov_values, survey)
 }
 \arguments{
 \item{survey_spec_list}{\code{list} of two simulation specs (results from \code{\link{build_sim}}}
