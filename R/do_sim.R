@@ -36,7 +36,9 @@ do_sim <- function(nsim, scenario, pred_dat, stratification=c(), logit_opts=NULL
   big_res <- c()
 
   # build a progress bar
-  pb <- txtProgressBar(min=1, max=nsim, style=3)
+  if(nsim>1){
+    pb <- txtProgressBar(min=1, max=nsim, style=3)
+  }
 
   # rotation matrix
   R <- matrix(c(cos(pi/4), sin(pi/4), -sin(pi/4), cos(pi/4)),2,2)
@@ -259,8 +261,9 @@ do_sim <- function(nsim, scenario, pred_dat, stratification=c(), logit_opts=NULL
     # bind to the rest
     big_res <- rbind(big_res, res)
 
-    setTxtProgressBar(pb, ii)
-
+    if(nsim>1){
+      setTxtProgressBar(pb, ii)
+    }
   }
 
   return(big_res)
