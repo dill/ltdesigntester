@@ -57,6 +57,9 @@ do_sim <- function(nsim, scenario, pred_dat, stratification=c(), logit_opts=NULL
       # put the data in dsm format
       dsm_data <- dsmify(survey_res)
 
+      # get truncation
+      truncation <- scenario@detectability@truncation
+
       # get the limits of the design in the x and y direction
       xlims <- scenario@region@box[c("xmin", "xmax")]
       ylims <- scenario@region@box[c("ymin", "ymax")]
@@ -76,6 +79,8 @@ do_sim <- function(nsim, scenario, pred_dat, stratification=c(), logit_opts=NULL
       xlims <- scenario[[1]]@region@box[c("xmin", "xmax")]
       ylims <- scenario[[1]]@region@box[c("ymin", "ymax")]
 
+      # get truncation
+      truncation <- scenario[[1]]@detectability@truncation
 
     }else if(length(scenario)==2){
       # pull these both for first si
@@ -93,6 +98,9 @@ do_sim <- function(nsim, scenario, pred_dat, stratification=c(), logit_opts=NULL
       # get the limits of the design in the x and y direction
       xlims <- scenario[[1]]@region@box[c("xmin", "xmax")]
       ylims <- scenario[[1]]@region@box[c("ymin", "ymax")]
+
+      # get truncation
+      truncation <- scenario[[1]]@detectability@truncation
     }else{
       stop("Neither one nor two simulation scenarios were supplied.")
     }
@@ -106,7 +114,8 @@ do_sim <- function(nsim, scenario, pred_dat, stratification=c(), logit_opts=NULL
     segs[,c("xr","yr")] <- t(R %*% t(segs[,c("x","y")]))
 
     # fit a detection function
-    df_model <- suppressMessages(try(ds(dist.data, key="hr", adjustment=NULL)))
+    df_model <- suppressMessages(try(ds(dist.data, key="hr", adjustment=NULL,
+                                        truncation=truncation)))
     # if something goes wrong, move on
     if(any(class(df_model) == "try-error") || #abs(df_model$ddf$par[1])<1e-6 ||
        any(is.na(df_model$ddf$hessian))){
@@ -118,6 +127,7 @@ do_sim <- function(nsim, scenario, pred_dat, stratification=c(), logit_opts=NULL
     # if there is a weather covariate
     if(length(scenario)>1){
       df_model_cov <- suppressMessages(try(ds(dist.data, key="hr",
+                                              truncation=truncation,
                                               formula=~weather)))
 
       if(any(class(df_model_cov) == "try-error") ||
