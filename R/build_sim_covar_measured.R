@@ -39,6 +39,18 @@ build_sim_covar_measured <- function(survey_spec_list, cov_values, survey){
   all_dat <- merge(all_dat, segs[,c("weather","Sample.Label")],
                    by="Sample.Label")
 
+  # deal with duplicates
+  dupes <- duplicated(all_dat$object)
+  if(any(dupes)){
+    tt <- table(all_dat$object)[table(all_dat$object)>1]
+    for(i in seq_along(names(tt))){
+      allo <- all_dat$object == as.numeric(names(tt))[i]
+      saver <- all_dat[allo, ,drop=FALSE][sample(1:sum(allo), 1), ,drop=FALSE]
+      all_dat <- all_dat[-which(allo), ]
+      all_dat <- rbind(all_dat, saver)
+    }
+  }
+
   # make the detection function samples
   samp <- matrix(NA, ncol=length(survey_spec_list), nrow=nrow(all_dat))
   for(i in seq_along(survey_spec_list)){
@@ -57,17 +69,6 @@ build_sim_covar_measured <- function(survey_spec_list, cov_values, survey){
   # build the new combined data frame
   new_dat <- all_dat[apply(samp, 1, any), ]
 
-  # deal with duplicates
-  dupes <- duplicated(new_dat$object)
-  if(any(dupes)){
-    tt <- table(new_dat$object)[table(new_dat$object)>1]
-    for(i in seq_along(names(tt))){
-      allo <- new_dat$object == as.numeric(names(tt))[i]
-      saver <- new_dat[allo, ,drop=FALSE][sample(1:sum(allo), 1), ,drop=FALSE]
-      new_dat <- new_dat[-which(allo), ]
-      new_dat <- rbind(new_dat, saver)
-    }
-  }
 
   # check histograms of distances
   #par(mfrow=c(1,length(survey_spec_list)+1))
